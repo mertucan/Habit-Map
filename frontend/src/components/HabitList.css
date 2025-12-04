@@ -1,0 +1,49 @@
+.habit-list-container {
+  padding: 1rem;
+}
+
+.add-habit-form {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.add-habit-form input {
+  padding: 0.5rem;
+  flex: 1;
+}
+
+.habit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.habit-card {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.habit-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.habit-link:hover {
+  color: #007bff;
+}
+
+.delete-btn {
+  margin-top: 1rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+

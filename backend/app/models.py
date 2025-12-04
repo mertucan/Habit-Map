@@ -1,39 +1,54 @@
-from .extensions import db, bcrypt
-from datetime import datetime
-
+from datetime import datetime, date
+from werkzeug.security import generate_password_hash, check_password_hash
+from app import db
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    habits = db.relationship('Habit', backref='owner', lazy=True, cascade="all, delete-orphan")
+    password_hash = db.Column(db.String(256), nullable=False)
+    habits = db.relationship('Habit', backref='author', lazy='dynamic')
 
     def set_password(self, password):
-        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        return bcrypt.check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password_hash, password)
 
-    def __repr__(self):
-        return f'<User {self.username}>'
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email
+        }
 
 class Habit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    description = db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    logs = db.relationship('HabitLog', backref='habit', lazy=True, cascade="all, delete-orphan")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    logs = db.relationship('HabitLog', backref='habit', lazy='dynamic', cascade="all, delete-orphan")
 
-    def __repr__(self):
-        return f'<Habit {self.name}>'
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'created_at': self.created_at.isoformat()
+        }
 
 class HabitLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date_completed = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     habit_id = db.Column(db.Integer, db.ForeignKey('habit.id'), nullable=False)
-    __table_args__ = (db.UniqueConstraint('habit_id', 'date_completed', name='_habit_date_uc'),)
+    completed = db.Column(db.Boolean, default=False)
+    completion_date = db.Column(db.Date, default=date.today)
 
-    def __repr__(self):
-        return f'<HabitLog {self.habit.name} on {self.date_completed}>'
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'habit_id': self.habit_id,
+            'completed': self.completed,
+            'completion_date': self.completion_date.isoformat()
+        }
+

@@ -1,0 +1,33 @@
+.heatmap-container {
+  width: 100%;
+}
+
+.react-calendar-heatmap {
+  width: 100%;
+}
+
+/* Make text smaller and lighter */
+.react-calendar-heatmap text {
+  font-size: 9px;
+  fill: #64748b; /* slate-500 */
+}
+
+/* Increase size of squares by reducing gutter (gap) implicitly or via props in component */
+/* Note: rect size is calculated by library based on width, but we can style them */
+
+.react-calendar-heatmap .color-empty {
+  fill: #1e293b; /* slate-800 */
+  rx: 2px; /* Rounded corners */
+  ry: 2px;
+}
+
+.react-calendar-heatmap rect {
+  rx: 2px; /* Rounded corners for all squares */
+  ry: 2px;
+}
+
+/* Green theme - GitHub style */
+.react-calendar-heatmap .color-github-1 { fill: #0e4429; }
+.react-calendar-heatmap .color-github-2 { fill: #006d32; }
+.react-calendar-heatmap .color-github-3 { fill: #26a641; }
+.react-calendar-heatmap .color-github-4 { fill: #39d353; }
