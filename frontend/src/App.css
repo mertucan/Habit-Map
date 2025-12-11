@@ -1,4 +1,3 @@
-/* App container - ensure it takes full height but doesn't enforce centering layout on children */
 .app-container {
   min-height: 100vh;
   width: 100%;

@@ -4,4 +4,3 @@ Flask-Migrate
 Flask-Cors
 Werkzeug
 python-dotenv
-

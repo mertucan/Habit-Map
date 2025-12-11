@@ -45,7 +45,6 @@ function AppRoutes() {
           <Reports />
         </PrivateRoute>
       } />
-      {/* HabitDetails route removed as requested */}
     </Routes>
   );
 }

@@ -8,7 +8,7 @@ import re
 
 bp = Blueprint('main', __name__)
 
-# --- Auth Routes ---
+# Routes for Authentication
 
 @bp.route('/register', methods=['POST'])
 def register():
@@ -68,11 +68,11 @@ def logout():
     session.pop('user_id', None)
     return jsonify({'message': 'Logged out'}), 200
 
-# --- Helper for Auth ---
+# Helper function to get the current user ID from the session
 def get_current_user_id():
     return session.get('user_id')
 
-# --- Habit Routes ---
+# Routes for Habits
 
 @bp.route('/habits', methods=['GET'])
 def get_habits():
@@ -85,7 +85,7 @@ def get_habits():
         habits = Habit.query.filter_by(user_id=user_id).all()
         habits_data = []
 
-        # Optimize: Fetch all logs for this user in one go
+        # Fetch all logs for this user in one go
         logs = HabitLog.query.join(Habit).filter(Habit.user_id == user_id).all()
         
         # Group logs by habit_id
@@ -187,7 +187,7 @@ def delete_habit(habit_id):
         print(f"Error in delete_habit: {e}")
         return jsonify({'error': str(e)}), 500
 
-# --- Habit Logs / Heatmap Routes ---
+# Routes for Habit Logs / Heatmap
 
 @bp.route('/habits/<int:habit_id>/logs', methods=['POST'])
 def add_habit_log(habit_id):
@@ -259,11 +259,9 @@ def get_stats():
         if not user_id:
             return jsonify({'error': 'Unauthorized'}), 401
 
-        # Total Habits
         total_habits = Habit.query.filter_by(user_id=user_id).count()
 
         # Get all unique completion dates for the user
-        # Removed .filter(HabitLog.completed == True) since existence now implies completion
         logs = db.session.query(HabitLog.completion_date).join(Habit).filter(
             Habit.user_id == user_id
         ).distinct().order_by(HabitLog.completion_date.desc()).all()
@@ -318,12 +316,9 @@ def get_reports():
         if not user_id:
             return jsonify({'error': 'Unauthorized'}), 401
 
-        # Reuse stats logic (or copy for now to be safe and quick)
-        # Total Habits
         total_habits = Habit.query.filter_by(user_id=user_id).count()
 
         # Get all logs for the user to calculate streaks and heatmap
-        # Removed .filter(HabitLog.completed == True) since existence now implies completion
         logs = db.session.query(HabitLog).join(Habit).filter(
             Habit.user_id == user_id
         ).all()
