@@ -28,7 +28,7 @@ const Dashboard = () => {
       setHabits(habitsRes.data);
       setStats(statsRes.data);
       
-      // Fetch heatmap data for all habits to aggregate
+      // Birleştirmek için tüm alışkanlıkların ısı haritası verilerini getir
       const heatmapPromises = habitsRes.data.map(h => api.get(`/habits/${h.id}/heatmap`));
       const heatmaps = await Promise.all(heatmapPromises);
       
@@ -57,7 +57,7 @@ const Dashboard = () => {
         description: newHabitDesc 
       });
       setHabits([...habits, response.data]);
-      // Update stats locally or refetch
+      // İstatistikleri yerel olarak güncelle veya yeniden getir
       setStats(prev => ({ ...prev, total_habits: prev.total_habits + 1 }));
       
       setNewHabitName('');
@@ -70,12 +70,12 @@ const Dashboard = () => {
 
   return (
     <Layout isLoading={loading}>
-      {/* PageHeading */}
+      {/* Sayfa Başlığı */}
       <div className="flex flex-wrap justify-between gap-4 items-center mb-6">
         <p className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Dashboard</p>
       </div>
 
-      {/* Add Habit Modal */}
+      {/* Alışkanlık Ekle Modalı */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-[#111a22] p-6 rounded-xl border border-slate-800 w-full max-w-md">
@@ -116,9 +116,9 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Stats - Reports Style */}
+      {/* İstatistikler - Rapor Stili */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {/* Best Streak */}
+        {/* En İyi Seri */}
         <div className={`p-6 rounded-xl border flex items-center gap-4 ${
           stats.best_streak > 0 
             ? 'border-orange-500/50 bg-gradient-to-br from-orange-500/20 to-red-600/20' 
@@ -135,7 +135,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Current Streak */}
+        {/* Mevcut Seri */}
         <div className="bg-[#111a22] p-6 rounded-xl border border-slate-800 flex items-center gap-4">
           <div className="p-3 bg-green-500/20 text-green-500 rounded-lg">
             <TrendingUp size={32} />
@@ -146,7 +146,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Total Habits */}
+        {/* Toplam Alışkanlıklar */}
         <div className="bg-[#111a22] p-6 rounded-xl border border-slate-800 flex items-center gap-4">
           <div className="p-3 bg-blue-500/20 text-blue-500 rounded-lg">
             <CheckSquare size={32} />
@@ -158,17 +158,17 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* SectionHeader for Heatmap */}
+      {/* Isı Haritası için Bölüm Başlığı */}
       <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] mb-4">Activity Map</h2>
 
-      {/* Heatmap Container */}
+      {/* Isı Haritası Konteyneri */}
       <div className="rounded-xl border border-slate-800 bg-[#111a22] p-6 mb-8">
         <div className="w-full overflow-hidden">
             <HabitHeatmap data={globalHeatmapData} />
         </div>
       </div>
 
-      {/* SectionHeader for Current Habits */}
+      {/* Mevcut Alışkanlıklar için Bölüm Başlığı */}
       <div className="flex flex-wrap justify-between gap-4 items-center mt-8 mb-4">
         <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Active Habits</h2>
         <button 
@@ -180,7 +180,7 @@ const Dashboard = () => {
         </button>
       </div>
 
-      {/* Habits Table */}
+      {/* Alışkanlıklar Tablosu */}
       <div className="overflow-x-auto rounded-xl border border-slate-800 bg-[#111a22]">
         <table className="w-full text-left text-sm text-slate-300">
           <thead className="text-xs text-slate-400 uppercase bg-slate-800/50">

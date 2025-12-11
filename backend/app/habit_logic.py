@@ -2,26 +2,25 @@ from collections import defaultdict
 
 def format_heatmap_data(logs):
     """
-    Transforms a list of HabitLog objects into a dictionary format
-    suitable for a heatmap visualization.
+    HabitLog nesnelerinin bir listesini, ısı haritası görselleştirmesi için
+    uygun bir sözlük formatına dönüştürür.
     
-    Args:
-        logs (list[HabitLog]): List of HabitLog objects.
+    Argümanlar:
+        logs (list[HabitLog]): HabitLog nesnelerinin listesi.
         
-    Returns:
-        dict: A dictionary where keys are dates (YYYY-MM-DD) and values are counts/intensities.
-              Example: { '2025-10-25': 1 }
+    Döndürür:
+        dict: Anahtarların tarih (YYYY-AA-GG) ve değerlerin sayı/yoğunluk olduğu bir sözlük.
+              Örnek: { '2025-10-25': 1 }
     """
     heatmap_data = defaultdict(int)
     
     for log in logs:
         if log.completed:
             date_str = log.completion_date.isoformat()
-            # For a boolean completion, we might just mark it as 1.
-            # If multiple logs per day were possible (e.g. drank water 3 times), we sum.
-            # The HabitLog model has 'completed' boolean.
-            # Assuming one log entry per completion event.
+            # Boolean tamamlama için sadece 1 olarak işaretleyebiliriz.
+            # Eğer günde birden fazla kayıt mümkün olsaydı (örn. 3 kez su içildi), toplardık.
+            # HabitLog modeli 'completed' boolean değerine sahiptir.
+            # Her tamamlama olayı için bir günlük girişi varsayılıyor.
             heatmap_data[date_str] += 1
             
     return dict(heatmap_data)
-

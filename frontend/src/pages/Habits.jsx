@@ -17,7 +17,7 @@ const Habits = () => {
 
   const fetchData = async () => {
     try {
-      // Now gets habits with heatmap data included
+      // Artık ısı haritası verileri dahil edilmiş alışkanlıkları getirir
       const habitsRes = await api.get('/habits');
       setHabits(habitsRes.data);
     } catch (error) {
@@ -67,15 +67,15 @@ const Habits = () => {
 
       const response = await api.post(`/habits/${habitId}/logs`, { date: localDate });
       
-      // Update local state to reflect change immediately without refetching everything
+      // Her şeyi yeniden getirmeden değişikliği hemen yansıtmak için yerel durumu güncelle
       setHabits(prevHabits => prevHabits.map(habit => {
         if (habit.id === habitId) {
-          const isUnchecking = response.data.completed === false; // Adjust based on backend response
+          const isUnchecking = response.data.completed === false; // Backend yanıtına göre ayarla
           
-          // Let's try optimistically updating the heatmap data
+          // Isı haritası verilerini iyimser bir şekilde güncellemeyi deneyelim
           const newHeatmap = { ...habit.heatmap };
           
-          // Check if it was completed (based on previous state)
+          // Tamamlanıp tamamlanmadığını kontrol et (önceki duruma göre)
           const wasCompleted = newHeatmap[localDate] > 0;
           
           if (wasCompleted) {
@@ -91,7 +91,7 @@ const Habits = () => {
 
     } catch (error) {
       console.error('Error logging habit:', error);
-      // If error, revert changes? Or just refetch to be safe.
+      // Hata olursa, değişiklikleri geri al? Veya güvenli olması için yeniden getir.
       fetchData();
     }
   };
@@ -107,7 +107,7 @@ const Habits = () => {
 
   return (
     <Layout isLoading={loading}>
-      {/* PageHeading */}
+      {/* Sayfa Başlığı */}
       <div className="flex flex-wrap justify-between gap-4 items-center mb-6">
         <p className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">My Habits</p>
         <button 
@@ -119,7 +119,7 @@ const Habits = () => {
         </button>
       </div>
 
-      {/* Add Habit Modal */}
+      {/* Alışkanlık Ekle Modalı */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-[#111a22] p-6 rounded-xl border border-slate-800 w-full max-w-md">
@@ -160,7 +160,7 @@ const Habits = () => {
         </div>
       )}
 
-      {/* Habits Grid */}
+      {/* Alışkanlıklar Izgarası */}
       {habits.length > 0 ? (
           <div className="grid grid-cols-1 gap-6">
             {habits.map((habit) => {
@@ -196,7 +196,7 @@ const Habits = () => {
                     
                     <div className="mt-2">
                       <p className="text-xs text-slate-500 mb-2 font-medium uppercase tracking-wider">Recent Activity</p>
-                      {/* Heatmap container with better visibility */}
+                      {/* Daha iyi görünürlüğe sahip ısı haritası konteyneri */}
                       <div className="w-full overflow-hidden">
                           <HabitHeatmap data={habit.heatmap || {}} />
                       </div>

@@ -34,14 +34,14 @@ const Reports = () => {
 
   return (
     <Layout>
-      {/* PageHeading */}
+      {/* Sayfa Başlığı */}
       <div className="flex flex-wrap justify-between gap-4 items-center mb-6">
         <p className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Reports</p>
       </div>
 
-      {/* Overview Stats */}
+      {/* Genel Bakış İstatistikleri */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Best Streak */}
+          {/* En İyi Seri */}
           <div className={`p-6 rounded-xl border flex items-center gap-4 ${
               data?.stats?.best_streak > 0 
               ? 'border-orange-500/50 bg-gradient-to-br from-orange-500/20 to-red-600/20' 
@@ -79,7 +79,7 @@ const Reports = () => {
           </div>
       </div>
 
-      {/* Heatmap Section */}
+      {/* Isı Haritası Bölümü */}
       <h2 className="text-white text-xl font-bold mb-4">Activity Map</h2>
       <div className="rounded-xl border border-slate-800 bg-[#111a22] p-6 mb-8">
           <div className="w-full overflow-hidden">

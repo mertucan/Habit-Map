@@ -8,7 +8,7 @@ import re
 
 bp = Blueprint('main', __name__)
 
-# Routes for Authentication
+# Kimlik Doğrulama Rotaları
 
 @bp.route('/register', methods=['POST'])
 def register():
@@ -21,7 +21,7 @@ def register():
         if not username or not email or not password:
             return jsonify({'error': 'Missing fields'}), 400
 
-        # Email validation using regex
+        # Regex kullanarak e-posta doğrulama
         email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         if not re.match(email_regex, email):
              return jsonify({'error': 'Invalid email format'}), 400
@@ -46,7 +46,7 @@ def register():
 def login():
     try:
         data = request.get_json()
-        username_or_email = data.get('username') # Frontend sends this field for both
+        username_or_email = data.get('username') # Frontend her ikisi için de bu alanı gönderir
         password = data.get('password')
 
         user = User.query.filter(
@@ -68,11 +68,11 @@ def logout():
     session.pop('user_id', None)
     return jsonify({'message': 'Logged out'}), 200
 
-# Helper function to get the current user ID from the session
+# Oturumdan geçerli kullanıcı ID'sini almak için yardımcı fonksiyon
 def get_current_user_id():
     return session.get('user_id')
 
-# Routes for Habits
+# Alışkanlıklar için Rotalar
 
 @bp.route('/habits', methods=['GET'])
 def get_habits():
@@ -81,14 +81,14 @@ def get_habits():
         if not user_id:
             return jsonify({'error': 'Unauthorized'}), 401
         
-        # Fetch habits
+        # Alışkanlıkları getir
         habits = Habit.query.filter_by(user_id=user_id).all()
         habits_data = []
 
-        # Fetch all logs for this user in one go
+        # Bu kullanıcı için tüm kayıtları tek seferde getir
         logs = HabitLog.query.join(Habit).filter(Habit.user_id == user_id).all()
         
-        # Group logs by habit_id
+        # Kayıtları habit_id'ye göre grupla
         logs_by_habit = {}
         for log in logs:
             if log.habit_id not in logs_by_habit:
@@ -97,7 +97,7 @@ def get_habits():
 
         for habit in habits:
             habit_dict = habit.to_dict()
-            # Attach heatmap data directly to habit object
+            # Isı haritası verilerini doğrudan alışkanlık nesnesine ekle
             habit_logs = logs_by_habit.get(habit.id, [])
             habit_dict['heatmap'] = format_heatmap_data(habit_logs)
             habits_data.append(habit_dict)
@@ -126,7 +126,7 @@ def create_habit():
         db.session.commit()
 
         habit_dict = habit.to_dict()
-        habit_dict['heatmap'] = {} # Empty heatmap for new habit
+        habit_dict['heatmap'] = {} # Yeni alışkanlık için boş ısı haritası
         return jsonify(habit_dict), 201
     except Exception as e:
         print(f"Error in create_habit: {e}")
@@ -187,7 +187,7 @@ def delete_habit(habit_id):
         print(f"Error in delete_habit: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Routes for Habit Logs / Heatmap
+# Alışkanlık Günlükleri / Isı Haritası Rotaları
 
 @bp.route('/habits/<int:habit_id>/logs', methods=['POST'])
 def add_habit_log(habit_id):
@@ -201,7 +201,7 @@ def add_habit_log(habit_id):
             return jsonify({'error': 'Habit not found'}), 404
 
         data = request.get_json()
-        date_str = data.get('date') # Format YYYY-MM-DD
+        date_str = data.get('date') # Format YYYY-AA-GG
         
         if date_str:
             try:
@@ -211,17 +211,17 @@ def add_habit_log(habit_id):
         else:
             log_date = date.today()
 
-        # Check if already logged for this date
+        # Bu tarih için zaten kaydedilmiş mi kontrol et
         existing_log = HabitLog.query.filter_by(habit_id=habit_id, completion_date=log_date).first()
         if existing_log:
-             # If it exists, it means it was completed. The user wants to toggle it off (uncheck).
-             # So we delete the record.
+             # Eğer varsa, tamamlanmış demektir. Kullanıcı bunu kapatmak (işareti kaldırmak) istiyor.
+             # Bu yüzden kaydı siliyoruz.
              db.session.delete(existing_log)
              db.session.commit()
-             # Return deleted status (null or specific message)
+             # Silinme durumunu döndür (null veya özel mesaj)
              return jsonify({'message': 'Log deleted (unchecked)', 'completed': False}), 200
         
-        # If it doesn't exist, create it (completed=True by default or just existence)
+        # Eğer yoksa, oluştur (varsayılan olarak completed=True veya sadece varlık)
         log = HabitLog(habit_id=habit_id, completed=True, completion_date=log_date)
         db.session.add(log)
         db.session.commit()
@@ -243,7 +243,7 @@ def get_habit_heatmap(habit_id):
         if not habit:
             return jsonify({'error': 'Habit not found'}), 404
 
-        # Only get logs that exist (implying completed)
+        # Sadece var olan kayıtları getir (tamamlandığını ima eder)
         logs = HabitLog.query.filter_by(habit_id=habit_id).all()
         heatmap_data = format_heatmap_data(logs)
         
@@ -261,7 +261,7 @@ def get_stats():
 
         total_habits = Habit.query.filter_by(user_id=user_id).count()
 
-        # Get all unique completion dates for the user
+        # Kullanıcı için tüm benzersiz tamamlanma tarihlerini getir
         logs = db.session.query(HabitLog.completion_date).join(Habit).filter(
             Habit.user_id == user_id
         ).distinct().order_by(HabitLog.completion_date.desc()).all()
@@ -276,7 +276,7 @@ def get_stats():
             today = date.today()
             last_date = dates[0]
             
-            # If the last log was today or yesterday, the streak is potentially alive
+            # Son kayıt bugün veya dün ise, seri potansiyel olarak devam ediyor
             diff = (today - last_date).days
             
             if diff <= 1:
@@ -318,12 +318,12 @@ def get_reports():
 
         total_habits = Habit.query.filter_by(user_id=user_id).count()
 
-        # Get all logs for the user to calculate streaks and heatmap
+        # Serileri ve ısı haritasını hesaplamak için kullanıcının tüm kayıtlarını getir
         logs = db.session.query(HabitLog).join(Habit).filter(
             Habit.user_id == user_id
         ).all()
 
-        # Heatmap Data Aggregation
+        # Isı Haritası Veri Toplama
         heatmap_data = {}
         unique_dates = set()
         
@@ -332,7 +332,7 @@ def get_reports():
             heatmap_data[date_str] = heatmap_data.get(date_str, 0) + 1
             unique_dates.add(log.completion_date)
 
-        # Sort dates for streak calculation
+        # Seri hesaplaması için tarihleri sırala
         dates = sorted(list(unique_dates), reverse=True)
         
         current_streak = 0

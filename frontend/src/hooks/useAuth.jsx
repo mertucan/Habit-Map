@@ -7,27 +7,27 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Helper to clear local state
+  // Yerel durumu temizlemek için yardımcı fonksiyon
   const clearAuthState = () => {
     setUser(null);
     localStorage.removeItem('user');
   };
 
   useEffect(() => {
-    // Check local storage on load
+    // Yüklemede yerel depolamayı kontrol et
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
     setLoading(false);
 
-    // Axios interceptor to handle 401s (expired session)
+    // 401'leri (süresi dolmuş oturum) işlemek için Axios engelleyici
     const interceptor = api.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error.response && error.response.status === 401) {
-          // If we get a 401, it means our session is invalid.
-          // We should log out locally to redirect to login page.
+          // Eğer 401 alırsak, oturumumuz geçersiz demektir.
+          // Giriş sayfasına yönlendirmek için yerel olarak çıkış yapmalıyız.
           clearAuthState();
         }
         return Promise.reject(error);

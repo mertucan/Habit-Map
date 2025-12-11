@@ -6,26 +6,26 @@ import './HabitHeatmap.css';
 const HabitHeatmap = ({ data }) => {
   const today = new Date();
   
-  // Helper to shift date
+  // Tarihi kaydırmak için yardımcı fonksiyon
   const shiftDate = (date, numDays) => {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + numDays);
     return newDate;
   };
 
-  // Helper to get YYYY-MM-DD in local time
+  // Yerel saatte YYYY-AA-GG formatını almak için yardımcı fonksiyon
   const toLocalDateString = (date) => {
     const offset = date.getTimezoneOffset();
     const localDate = new Date(date.getTime() - (offset * 60 * 1000));
     return localDate.toISOString().split('T')[0];
   };
 
-  // Generate all dates for the last year to ensure every cell has a date value
+  // Her hücrenin bir tarih değeri olduğundan emin olmak için geçen yılın tüm tarihlerini oluştur
   const getAllDates = () => {
     const dates = [];
-    const startDate = shiftDate(today, -364); // Start from 364 days ago
+    const startDate = shiftDate(today, -364); // 364 gün öncesinden başla
     
-    // Iterate from 0 to 364 to cover 365 days including today
+    // Bugünü de içeren 365 günü kapsamak için 0'dan 364'e kadar yinele
     for (let i = 0; i <= 364; i++) {
       const currentDate = shiftDate(startDate, i);
       const dateStr = toLocalDateString(currentDate);
@@ -51,7 +51,7 @@ const HabitHeatmap = ({ data }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    // Parse YYYY-MM-DD manually to avoid timezone issues
+    // Saat dilimi sorunlarını önlemek için YYYY-AA-GG'yi manuel olarak ayrıştır
     const [year, month, day] = dateString.split('-').map(Number);
     const localDate = new Date(year, month - 1, day);
 
